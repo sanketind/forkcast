@@ -1,0 +1,17 @@
+{
+  "name": "forkcast",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.6.3",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "db:seed": "pnpm --filter @forkcast/db seed"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.2",
+    "typescript": "^5.8.2"
+  }
+}
