@@ -75,10 +75,11 @@ export type StaffingRecommendation = {
 
 export type ActionCard = {
   title: string;
-  category: "inventory" | "staffing" | "promotion";
+  category: "inventory" | "staffing" | "promotion" | "supply";
   priority: number;
   expectedImpact: string;
   explanation: string;
+  urgencyDays?: number;
 };
 
 export type RecommendationBundle = {
@@ -86,4 +87,36 @@ export type RecommendationBundle = {
   shoppingList: ShoppingLine[];
   staffing: StaffingRecommendation;
   actionCards: ActionCard[];
+  supplyAlerts: SupplyAlert[];
+};
+
+// ── Supply Intelligence ────────────────────────────────────────────────────────
+
+export type SupplySignalType =
+  | "price_spike"
+  | "shortage_warning"
+  | "import_disruption"
+  | "price_drop";
+
+export type SupplySeverity = "low" | "medium" | "high" | "critical";
+
+export type SupplySignal = {
+  commodity: string;
+  signalType: SupplySignalType;
+  severity: SupplySeverity;
+  region: string[];
+  headline: string;
+  daysUntilImpact: number;
+  confidence: number;
+  source: "newsapi" | "agmarknet" | "manual";
+};
+
+export type SupplyAlert = {
+  commodity: string;
+  affectedIngredients: string[];
+  severity: SupplySeverity;
+  daysUntilImpact: number;
+  recommendation: string;
+  estimatedCostImpact: string;
+  headline: string;
 };

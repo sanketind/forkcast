@@ -1,22 +1,102 @@
-import { buildRecommendationBundle, demoForecastInput } from "@forkcast/domain";
-import { getIndiaCalendarSignal, getWeatherSignal } from "@forkcast/integrations";
+import { buildRecommendationBundle, buildSupplyAlerts, demoForecastInput } from "@forkcast/domain";
+import {
+  fetchMandiPrices,
+  fetchSupplyNewsSignals,
+  getIndiaCalendarSignal,
+  getWeatherSignal,
+  TRACKED_COMMODITIES
+} from "@forkcast/integrations";
 import { DashboardClient } from "@/components/dashboard-client";
 import { getOutletProfile } from "@/lib/demo-state";
+import { getRecipesForOutlet, getSalesDaysForOutlet } from "@/lib/sales-db";
+import { computeForecastAccuracy } from "@/lib/accuracy";
 
 export default async function DashboardPage() {
   const outlet = await getOutletProfile();
-  const calendar = getIndiaCalendarSignal(demoForecastInput.targetDate, outlet.city);
-  const weather = await getWeatherSignal(outlet.city, demoForecastInput.targetDate);
+  const targetDate = demoForecastInput.targetDate;
 
-  const bundle = buildRecommendationBundle({
-    ...demoForecastInput,
-    calendar,
-    weather
-  });
+  const [calendar, weather] = await Promise.all([
+    Promise.resolve(getIndiaCalendarSignal(targetDate, outlet.city)),
+    getWeatherSignal(outlet.city, targetDate)
+  ]);
+
+  let salesHistory = demoForecastInput.salesHistory;
+  let recipes = demoForecastInput.recipes;
+  let isDemo = true;
+
+  if (outlet.outletId) {
+    try {
+      const [realDays, realRecipes] = await Promise.all([
+        getSalesDaysForOutlet(outlet.outletId),
+        getRecipesForOutlet(outlet.outletId)
+      ]);
+
+      if (realDays.length >= 3) {
+        salesHistory = realDays;
+        isDemo = false;
+      }
+      if (realRecipes.length > 0) {
+        recipes = realRecipes;
+      }
+    } catch (err) {
+      console.error("[dashboard] DB query failed, falling back to demo data:", err);
+    }
+  }
+
+  // Supply intelligence — fetch news + mandi price signals in parallel
+  const [newsSignals, mandiOnion, mandiChicken] = await Promise.all([
+    fetchSupplyNewsSignals(TRACKED_COMMODITIES, outlet.city).catch(() => []),
+    fetchMandiPrices("Onion", outlet.state).catch(() => null),
+    fetchMandiPrices("Chicken", outlet.state).catch(() => null)
+  ]);
+
+  const allSupplySignals = [
+    ...newsSignals,
+    ...[mandiOnion, mandiChicken].filter(Boolean) as typeof newsSignals
+  ];
+  const supplyAlerts = buildSupplyAlerts(allSupplySignals, recipes, outlet.city);
+
+  const demandBundle = buildRecommendationBundle({ salesHistory, calendar, weather, recipes, targetDate });
+  const bundle = { ...demandBundle, supplyAlerts };
+
+  // Walk-forward accuracy validation (runs in parallel, silently skips on failure)
+  const accuracyPoints = await computeForecastAccuracy(salesHistory, outlet.city, recipes).catch(() => []);
 
   return (
     <div className="grid gap-6">
-      <DashboardClient bundle={bundle} outletName={outlet.outletName} />
+      {isDemo && (
+        <div
+          style={{
+            padding: "12px 18px",
+            borderRadius: "14px",
+            background: "rgba(248, 184, 78, 0.10)",
+            border: "1px solid rgba(248, 184, 78, 0.28)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "12px"
+          }}
+        >
+          <span style={{ color: "var(--warn)", fontSize: "0.9rem" }}>
+            Demo mode — showing sample data. Upload your POS data to see real forecasts.
+          </span>
+          <a
+            className="button secondary"
+            href="/onboarding"
+            style={{ fontSize: "0.82rem", padding: "8px 14px", whiteSpace: "nowrap" }}
+          >
+            Upload data
+          </a>
+        </div>
+      )}
+      <DashboardClient
+        bundle={bundle}
+        outletName={outlet.outletName}
+        isDemo={isDemo}
+        salesHistory={salesHistory}
+        targetDate={targetDate}
+        accuracyPoints={accuracyPoints}
+      />
     </div>
   );
 }

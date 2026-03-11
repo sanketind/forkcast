@@ -9,12 +9,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource/plus-jakarta-sans": "^5.2.8",
+    "@forkcast/db": "workspace:^",
     "@forkcast/domain": "workspace:*",
     "@forkcast/integrations": "workspace:*",
+    "drizzle-orm": "^0.41.0",
     "inngest": "^3.39.2",
     "next": "^15.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "recharts": "^3.8.0",
     "tailwindcss": "^4.0.15",
     "zod": "^3.24.2"
   },

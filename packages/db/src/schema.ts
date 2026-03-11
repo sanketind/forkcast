@@ -43,6 +43,7 @@ export const outlets = pgTable("outlets", {
   state: varchar("state", { length: 120 }).notNull(),
   cuisine: varchar("cuisine", { length: 120 }).notNull(),
   seats: integer("seats").notNull().default(40),
+  whatsappNumber: varchar("whatsapp_number", { length: 30 }),
   createdAt: timestamp("created_at").defaultNow().notNull()
 });
 
@@ -194,6 +195,26 @@ export const actionCards = pgTable("action_cards", {
   status: recommendationStatus("status").notNull().default("draft")
 });
 
+export const supplyAlertStatus = pgEnum("supply_alert_status", ["new", "snoozed", "dismissed"]);
+
+export const supplyAlerts = pgTable("supply_alerts", {
+  id: serial("id").primaryKey(),
+  outletId: integer("outlet_id").references(() => outlets.id),
+  commodity: varchar("commodity", { length: 80 }).notNull(),
+  signalType: varchar("signal_type", { length: 60 }).notNull(),
+  severity: varchar("severity", { length: 20 }).notNull(),
+  headline: text("headline").notNull(),
+  recommendation: text("recommendation").notNull(),
+  estimatedCostImpact: text("estimated_cost_impact").notNull(),
+  affectedIngredients: jsonb("affected_ingredients").$type<string[]>().notNull().default([]),
+  daysUntilImpact: integer("days_until_impact").notNull().default(7),
+  confidence: numeric("confidence", { precision: 5, scale: 2 }).notNull().default("0.60"),
+  status: supplyAlertStatus("status").notNull().default("new"),
+  region: jsonb("region").$type<string[]>().notNull().default([]),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull()
+});
+
 export type DbSchema = {
   users: typeof users;
   tenants: typeof tenants;
@@ -213,4 +234,5 @@ export type DbSchema = {
   staffingRecommendations: typeof staffingRecommendations;
   shoppingRecommendations: typeof shoppingRecommendations;
   actionCards: typeof actionCards;
+  supplyAlerts: typeof supplyAlerts;
 };

@@ -202,6 +202,7 @@ export function buildRecommendationBundle(input: ForecastInput): RecommendationB
     forecast,
     shoppingList,
     staffing,
-    actionCards
+    actionCards,
+    supplyAlerts: []
   };
 }
