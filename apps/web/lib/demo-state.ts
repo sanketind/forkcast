@@ -13,9 +13,9 @@ export type OutletProfile = {
 export const OUTLET_COOKIE = "forkcast_outlet_profile";
 
 const DEFAULT_PROFILE: OutletProfile = {
-  outletName: "Koramangala Grill",
-  city: "Bengaluru",
-  state: "Karnataka",
+  outletName: "FC Road Kitchen",
+  city: "Pune",
+  state: "Maharashtra",
   cuisine: "North Indian",
   seats: 42
 };
