@@ -6,6 +6,7 @@ import type { RecommendationBundle, SalesDay, SupplyAlert, SupplySeverity } from
 import type { AccuracyPoint } from "@/lib/accuracy";
 import { ForecastChart } from "@/components/forecast-chart";
 import { HourlyChart } from "@/components/hourly-chart";
+import { SkuChart } from "@/components/sku-chart";
 
 type Props = {
   bundle: RecommendationBundle;
@@ -206,6 +207,8 @@ export function DashboardClient({
   const [acceptedShopping, setAcceptedShopping] = useState(false);
   const [acceptedStaffing, setAcceptedStaffing] = useState(false);
   const [dismissedCards, setDismissedCards] = useState<Set<string>>(new Set());
+  const [acceptedCards, setAcceptedCards] = useState<Set<string>>(new Set());
+  const [showSyncModal, setShowSyncModal] = useState(false);
 
   const handleAction = async (title: string, status: "accepted" | "dismissed") => {
     try {
@@ -277,6 +280,27 @@ export function DashboardClient({
           </p>
         )}
       </section>
+
+      {/* ── Menu tomorrow — SKU forecast ────────────────────────────────────── */}
+      {Object.keys(bundle.forecast.skuForecast).length > 0 && (
+        <section className="panel">
+          <div className="section-title">
+            <div>
+              <p className="eyebrow">Menu tomorrow</p>
+              <h3>Expected orders by dish</h3>
+            </div>
+            <span className="pill">
+              {Object.keys(bundle.forecast.skuForecast).length} items
+            </span>
+          </div>
+          <div style={{ height: "220px" }}>
+            <SkuChart skuForecast={bundle.forecast.skuForecast} />
+          </div>
+          <p style={{ marginTop: "12px", fontSize: "0.82rem", color: "var(--muted)" }}>
+            Top dish (teal) drives your shopping list. Prep quantities are scaled to these projections.
+          </p>
+        </section>
+      )}
 
       {/* ── Supply Watch ───────────────────────────────────────────────────── */}
       {bundle.supplyAlerts.length > 0 && (
@@ -370,52 +394,72 @@ export function DashboardClient({
             <p className="eyebrow">Action cards</p>
             <h3>Prioritized recommendations</h3>
           </div>
+          {acceptedCards.size > 0 && (
+            <span className="pill">
+              {acceptedCards.size} accepted today
+            </span>
+          )}
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           {bundle.actionCards
             .filter((card) => !dismissedCards.has(card.title))
-            .map((card) => (
-              <article className="action-card" key={card.title}>
-                <div
+            .map((card) => {
+              const isAccepted = acceptedCards.has(card.title);
+              const pillBg =
+                card.priority === 1
+                  ? "rgba(239,68,68,0.18)"
+                  : card.priority === 2
+                    ? "rgba(248,184,78,0.18)"
+                    : "var(--accent-soft)";
+              const pillColor =
+                card.priority === 1 ? "#ef4444" : card.priority === 2 ? "var(--warn)" : "var(--accent)";
+
+              return (
+                <article
+                  className="action-card"
+                  key={card.title}
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    gap: "8px",
-                    marginBottom: "10px"
+                    opacity: isAccepted ? 0.7 : 1,
+                    borderColor: isAccepted ? "rgba(74,217,167,0.3)" : undefined,
+                    transition: "opacity 0.2s, border-color 0.2s"
                   }}
                 >
-                  <p
-                    className="pill"
-                    style={{
-                      background:
-                        card.priority === 1
-                          ? "rgba(239,68,68,0.18)"
-                          : card.priority === 2
-                            ? "rgba(248,184,78,0.18)"
-                            : "var(--accent-soft)"
-                    }}
-                  >
-                    {card.category}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", marginBottom: "10px" }}>
+                    <p className="pill" style={{ background: pillBg, color: pillColor }}>
+                      {card.category}
+                    </p>
+                    <button
+                      className="button ghost"
+                      style={{ fontSize: "0.75rem", padding: "4px 10px" }}
+                      onClick={() => {
+                        setDismissedCards((prev) => new Set([...prev, card.title]));
+                        void handleAction(card.title, "dismissed");
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <h4 style={{ fontSize: "0.95rem", marginBottom: "6px" }}>{card.title}</h4>
+                  <p style={{ color: "var(--muted)", fontSize: "0.875rem", marginBottom: "10px" }}>
+                    {card.explanation}
                   </p>
-                  <button
-                    className="button ghost"
-                    style={{ fontSize: "0.75rem", padding: "4px 10px" }}
-                    onClick={() => {
-                      setDismissedCards((prev) => new Set([...prev, card.title]));
-                      void handleAction(card.title, "dismissed");
-                    }}
-                  >
-                    Dismiss
-                  </button>
-                </div>
-                <h4 style={{ fontSize: "0.95rem", marginBottom: "6px" }}>{card.title}</h4>
-                <p style={{ color: "var(--muted)", fontSize: "0.875rem", marginBottom: "6px" }}>
-                  {card.explanation}
-                </p>
-                <small>{card.expectedImpact}</small>
-              </article>
-            ))}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
+                    <small style={{ color: "var(--muted)" }}>{card.expectedImpact}</small>
+                    <button
+                      className={`button ${isAccepted ? "secondary" : ""}`}
+                      style={{ fontSize: "0.78rem", padding: "6px 12px", minWidth: "80px", flexShrink: 0 }}
+                      onClick={() => {
+                        setAcceptedCards((prev) => new Set([...prev, card.title]));
+                        void handleAction(card.title, "accepted");
+                      }}
+                      disabled={isAccepted}
+                    >
+                      {isAccepted ? "✓ Done" : "Accept"}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           {bundle.actionCards.every((c) => dismissedCards.has(c.title)) && (
             <p style={{ color: "var(--muted)", fontSize: "0.9rem", gridColumn: "1 / -1" }}>
               All action cards dismissed for today.
@@ -439,6 +483,99 @@ export function DashboardClient({
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* ── Keep data fresh ──────────────────────────────────────────────────── */}
+      <section
+        className="panel"
+        style={{ borderColor: isDemo ? "rgba(248,184,78,0.25)" : "rgba(74,217,167,0.18)" }}
+      >
+        <div className="section-title">
+          <div>
+            <p className="eyebrow" style={{ color: isDemo ? "var(--warn)" : "var(--accent)" }}>
+              Data freshness
+            </p>
+            <h3>Keep data fresh</h3>
+          </div>
+          <button
+            className="button secondary"
+            style={{ fontSize: "0.82rem", whiteSpace: "nowrap" }}
+            onClick={() => setShowSyncModal((v) => !v)}
+          >
+            {showSyncModal ? "Cancel" : isDemo ? "Upload data" : "Upload more"}
+          </button>
+        </div>
+
+        {!showSyncModal && (
+          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+            {isDemo ? (
+              <p style={{ color: "var(--muted)", fontSize: "0.9rem", margin: 0 }}>
+                Running on demo data.{" "}
+                <a href="/onboarding" style={{ color: "var(--accent)" }}>
+                  Upload your POS CSV
+                </a>{" "}
+                to get forecasts from your real sales history.
+              </p>
+            ) : (
+              <>
+                <div>
+                  <span style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>Last synced</span>
+                  <p style={{ margin: "4px 0 0", fontWeight: 600 }}>
+                    {salesHistory.length > 0
+                      ? new Date(salesHistory[salesHistory.length - 1].date + "T00:00:00Z")
+                          .toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })
+                      : "—"}
+                  </p>
+                </div>
+                <div>
+                  <span style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>Days of history</span>
+                  <p style={{ margin: "4px 0 0", fontWeight: 600 }}>{salesHistory.length} days</p>
+                </div>
+                <div>
+                  <span style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>Forecast quality</span>
+                  <p style={{ margin: "4px 0 0", fontWeight: 600, color: salesHistory.length >= 14 ? "var(--accent)" : salesHistory.length >= 7 ? "var(--warn)" : "#ef4444" }}>
+                    {salesHistory.length >= 14 ? "Excellent" : salesHistory.length >= 7 ? "Good" : "Needs more data"}
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {showSyncModal && (
+          <div
+            style={{
+              marginTop: "8px",
+              padding: "20px",
+              borderRadius: "16px",
+              background: "rgba(7,17,31,0.5)",
+              border: "1px solid var(--border)"
+            }}
+          >
+            <p style={{ fontSize: "0.9rem", color: "var(--muted)", marginBottom: "16px" }}>
+              Upload your latest weekly POS export. New data will be merged — no duplicates created.
+            </p>
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+              <a
+                href="/onboarding"
+                className="button"
+                style={{ fontSize: "0.85rem" }}
+              >
+                Go to upload wizard →
+              </a>
+              <button
+                className="button ghost"
+                style={{ fontSize: "0.85rem" }}
+                onClick={() => setShowSyncModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+            <p style={{ marginTop: "12px", fontSize: "0.78rem", color: "var(--muted)" }}>
+              Supported formats: Petpooja, UrbanPiper, Posist, Forkcast Standard CSV
+            </p>
+          </div>
+        )}
       </section>
 
       {/* ── Forecast accuracy tracker ────────────────────────────────────────── */}
