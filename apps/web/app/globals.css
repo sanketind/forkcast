@@ -409,3 +409,112 @@ td {
 
   .button { padding: 9px 13px; }
 }
+
+/* ── Auth pages ──────────────────────────────────────────────────────────────── */
+.auth-page {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.auth-brand { text-align: center; }
+
+.auth-title {
+  font-size: var(--text-2xl);
+  margin: 8px 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.auth-subtitle {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  margin: 0;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-error {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--danger-soft);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  font-size: var(--text-sm);
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-terms {
+  font-size: var(--text-xs);
+  color: rgba(156, 176, 206, 0.6);
+}
+
+.accent-link {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.accent-link:hover { opacity: 0.8; }
+
+.button-full { width: 100%; justify-content: center; }
+
+/* ── Nav authenticated state ──────────────────────────────────────────────── */
+.nav-email {
+  font-size: var(--text-xs);
+  color: var(--muted);
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(155, 190, 255, 0.06);
+  border: 1px solid var(--border);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-signout {
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  font-family: var(--font-sans);
+}
+
+.nav-signout:hover {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.4);
+  background: var(--danger-soft);
+}
+
+.nav-cta {
+  background: var(--accent) !important;
+  color: #071824 !important;
+  font-weight: 700 !important;
+  padding: 7px 18px !important;
+}
