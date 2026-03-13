@@ -9,8 +9,8 @@ export default function SignInPage({
 }) {
   return (
     <AuthShell
-      title="Sign in to Forkcast"
-      subtitle="Your restaurant co-pilot — know tomorrow before it arrives."
+      title="Sign in"
+      subtitle="Your restaurant co-pilot is waiting."
       searchParams={searchParams}
       formAction={signInAction}
       submitLabel="Sign in"
@@ -47,54 +47,101 @@ async function AuthShell({
 
   return (
     <div className="auth-page">
-      <div className="auth-card panel">
-        <div className="auth-brand">
-          <p className="eyebrow">Restaurant AI Co-pilot</p>
-          <h2 className="auth-title">{title}</h2>
-          <p className="auth-subtitle">{subtitle}</p>
+      {/* Left brand panel — coral gradient bg, all text must be white */}
+      <div className="auth-brand-panel">
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 48, textDecoration: "none" }}>
+          <div style={{ width: 32, height: 32, background: "var(--on-brand-surface)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>⚡</div>
+          <span style={{ fontSize: "var(--text-base)", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--on-brand)" }}>Forkcast</span>
+        </Link>
+
+        <div style={{ fontSize: "var(--text-2xs)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--on-brand-subtle)", marginBottom: 8 }}>AI co-pilot for Indian restaurants</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)", letterSpacing: "-0.03em", marginTop: 12, marginBottom: 20, color: "var(--on-brand)", lineHeight: 1.15 }}>
+          Know tomorrow&apos;s revenue.
+          <br />
+          <span style={{ color: "var(--on-brand-muted)", fontStyle: "italic" }}>Act tonight.</span>
+        </h2>
+        <p style={{ color: "var(--on-brand-muted)", fontSize: "var(--text-base)", lineHeight: 1.7, maxWidth: 380 }}>
+          Forkcast predicts tomorrow&apos;s sales using your POS history, festivals,
+          weather, and mandi prices — then delivers a WhatsApp at 7pm with your
+          shopping list and staffing plan.
+        </p>
+
+        <div style={{ marginTop: 48, display: "flex", flexDirection: "column", gap: 14 }}>
+          {[
+            { icon: "📈", text: "Revenue forecast with confidence range" },
+            { icon: "🛒", text: "Ingredient shopping list — exact quantities" },
+            { icon: "👨‍🍳", text: "Peak-hour staffing plan" },
+            { icon: "⚠️", text: "Supply alerts 2–7 days ahead" },
+          ].map((item) => (
+            <div key={item.text} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 32, height: 32, borderRadius: "var(--radius-sm)", background: "var(--on-brand-surface)", border: "1px solid var(--on-brand-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
+                {item.icon}
+              </div>
+              <span style={{ fontSize: "var(--text-sm)", color: "var(--on-brand-muted)" }}>{item.text}</span>
+            </div>
+          ))}
         </div>
+      </div>
 
-        {error && (
-          <div className="auth-error">
-            {decodeURIComponent(error)}
+      {/* Right form panel */}
+      <div className="auth-form-panel">
+        <div className="auth-form-card">
+          <div>
+            <h1 style={{ fontSize: "var(--text-2xl)", letterSpacing: "-0.02em", marginBottom: 6, color: "var(--text)" }}>
+              {title}
+            </h1>
+            <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)", margin: 0 }}>{subtitle}</p>
           </div>
-        )}
 
-        <form action={formAction} className="auth-form">
-          {next && <input type="hidden" name="next" value={next} />}
+          {error && (
+            <div className="auth-error">{decodeURIComponent(error)}</div>
+          )}
 
-          <label className="field">
-            <span>Email address</span>
-            <input
-              className="text-input"
-              name="email"
-              type="email"
-              placeholder="owner@yourrestaurant.in"
-              required
-              autoComplete="email"
-            />
-          </label>
+          <form action={formAction} className="auth-form">
+            {next && <input type="hidden" name="next" value={next} />}
 
-          <label className="field">
-            <span>Password</span>
-            <input
-              className="text-input"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              required
-              autoComplete="current-password"
-            />
-          </label>
+            <label className="field">
+              <span>Email address</span>
+              <input
+                className="text-input"
+                name="email"
+                type="email"
+                placeholder="owner@yourrestaurant.in"
+                required
+                autoComplete="email"
+              />
+            </label>
 
-          {extraFields}
+            <label className="field">
+              <span>Password</span>
+              <input
+                className="text-input"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                required
+                autoComplete="current-password"
+              />
+            </label>
 
-          <button className="button button-full" type="submit">
-            {submitLabel}
-          </button>
-        </form>
+            {extraFields}
 
-        {footer && <div className="auth-footer">{footer}</div>}
+            <button className="button button-full" type="submit" style={{ marginTop: 4 }}>
+              {submitLabel}
+            </button>
+          </form>
+
+          {footer && (
+            <div className="auth-footer">{footer}</div>
+          )}
+
+          <div style={{ paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+            <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "var(--text-sm)", color: "var(--text-secondary)", transition: "color 0.15s" }}>
+              <span>→</span>
+              <span>Explore demo dashboard without signing in</span>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

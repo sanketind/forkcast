@@ -17,18 +17,25 @@ type Props = {
   accuracyPoints: AccuracyPoint[];
 };
 
-const SEVERITY_LABEL: Record<SupplySeverity, string> = {
-  critical: "CRITICAL",
-  high: "HIGH",
-  medium: "MEDIUM",
-  low: "LOW"
+const SEVERITY_COLOR: Record<SupplySeverity, string> = {
+  critical: "var(--red)",
+  high: "var(--amber)",
+  medium: "var(--amber)",
+  low: "var(--text-secondary)"
 };
 
-const SEVERITY_COLOR: Record<SupplySeverity, string> = {
-  critical: "#ef4444",
-  high: "var(--warn)",
-  medium: "#f59e0b",
-  low: "var(--muted)"
+const SEVERITY_BG: Record<SupplySeverity, string> = {
+  critical: "var(--red-soft)",
+  high: "var(--amber-soft)",
+  medium: "var(--amber-soft)",
+  low: "var(--surface-raised)"
+};
+
+const SEVERITY_BORDER: Record<SupplySeverity, string> = {
+  critical: "rgba(193,53,21,0.25)",
+  high: "rgba(255,180,0,0.3)",
+  medium: "rgba(255,180,0,0.2)",
+  low: "var(--border)"
 };
 
 function SupplyWatchPanel({ alerts }: { alerts: SupplyAlert[] }) {
@@ -44,101 +51,80 @@ function SupplyWatchPanel({ alerts }: { alerts: SupplyAlert[] }) {
   const hasCritical = visible.some((a) => a.severity === "critical" || a.severity === "high");
 
   return (
-    <section
-      className="panel"
-      style={{
-        borderColor: hasCritical ? "rgba(239,68,68,0.35)" : "rgba(248,184,78,0.3)",
-        background: hasCritical ? "rgba(239,68,68,0.06)" : "rgba(248,184,78,0.06)"
-      }}
-    >
+    <section className="panel">
       <div className="section-title">
         <div>
-          <p className="eyebrow" style={{ color: hasCritical ? "#ef4444" : "var(--warn)" }}>
+          <p className="eyebrow" style={{ color: hasCritical ? "var(--red)" : "var(--amber)" }}>
             Supply Watch
           </p>
-          <h3>
+          <h3 style={{ fontSize: "var(--text-lg)", letterSpacing: "-0.01em" }}>
             {visible.length} active alert{visible.length !== 1 ? "s" : ""}
           </h3>
         </div>
-        <span
-          className="pill"
-          style={{
-            background: hasCritical ? "rgba(239,68,68,0.18)" : "rgba(248,184,78,0.18)",
-            color: hasCritical ? "#ef4444" : "var(--warn)"
-          }}
-        >
+        <span className={`pill ${hasCritical ? "red" : "amber"}`}>
           Act now
         </span>
       </div>
 
-      <div className="grid gap-4">
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {visible.map((alert) => (
-          <article
+          <div
             key={alert.commodity}
             style={{
               padding: "16px 18px",
-              borderRadius: "16px",
-              background: "rgba(7,17,31,0.5)",
-              border: `1px solid ${SEVERITY_COLOR[alert.severity]}33`
+              borderRadius: 10,
+              background: SEVERITY_BG[alert.severity],
+              border: `1px solid ${SEVERITY_BORDER[alert.severity]}`,
+              position: "relative"
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                gap: "12px",
-                marginBottom: "10px"
-              }}
-            >
-              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                <span
-                  className="pill"
-                  style={{
-                    background: `${SEVERITY_COLOR[alert.severity]}22`,
-                    color: SEVERITY_COLOR[alert.severity],
-                    fontWeight: 700,
-                    fontSize: "0.75rem"
-                  }}
-                >
-                  {SEVERITY_LABEL[alert.severity]}
+            <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "3px 0 0 3px", background: SEVERITY_COLOR[alert.severity] }} />
+            <div style={{ paddingLeft: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 8 }}>
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <span className={`pill ${alert.severity === "critical" ? "red" : alert.severity === "low" ? "" : "amber"}`} style={{ fontSize: "0.68rem" }}>
+                    {alert.severity.toUpperCase()}
+                  </span>
+                  <strong style={{ fontSize: "var(--text-sm)", color: "var(--text)" }}>{alert.commodity}</strong>
+                </div>
+                <span style={{ color: "var(--text-tertiary)", fontSize: "0.78rem", whiteSpace: "nowrap" }}>
+                  {alert.daysUntilImpact}d to act
                 </span>
-                <strong style={{ fontSize: "1rem" }}>{alert.commodity}</strong>
               </div>
-              <span style={{ color: "var(--muted)", fontSize: "0.82rem", whiteSpace: "nowrap" }}>
-                Act within {alert.daysUntilImpact} day{alert.daysUntilImpact !== 1 ? "s" : ""}
-              </span>
-            </div>
 
-            <p style={{ color: "var(--muted)", fontSize: "0.88rem", margin: "0 0 6px" }}>
-              {alert.headline}
-            </p>
-            <p style={{ margin: "0 0 4px", fontWeight: 500 }}>→ {alert.recommendation}</p>
-            <small style={{ color: "var(--muted)" }}>{alert.estimatedCostImpact}</small>
-
-            {alert.affectedIngredients.length > 0 && (
-              <p style={{ margin: "8px 0 0", fontSize: "0.8rem", color: "var(--muted)" }}>
-                Affects: {alert.affectedIngredients.join(", ")}
+              <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)", margin: "0 0 4px" }}>
+                {alert.headline}
               </p>
-            )}
+              <p style={{ margin: "0 0 4px", fontWeight: 600, fontSize: "var(--text-sm)", color: "var(--text)" }}>
+                → {alert.recommendation}
+              </p>
+              {alert.estimatedCostImpact && (
+                <p style={{ margin: "0 0 10px", fontSize: "0.78rem", color: "var(--text-secondary)" }}>
+                  {alert.estimatedCostImpact}
+                </p>
+              )}
+              {alert.affectedIngredients.length > 0 && (
+                <p style={{ margin: "0 0 10px", fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+                  Affects: {alert.affectedIngredients.join(", ")}
+                </p>
+              )}
 
-            <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
-              <button
-                className="button secondary"
-                style={{ fontSize: "0.8rem", padding: "7px 14px" }}
-                onClick={() => setDismissed((prev) => new Set([...prev, alert.commodity]))}
-              >
-                Got it
-              </button>
-              <button
-                className="button ghost"
-                style={{ fontSize: "0.8rem", padding: "7px 14px" }}
-                onClick={() => setSnoozed((prev) => new Set([...prev, alert.commodity]))}
-              >
-                Snooze 24h
-              </button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  className="button secondary button-sm"
+                  onClick={() => setDismissed((prev) => new Set([...prev, alert.commodity]))}
+                >
+                  Got it
+                </button>
+                <button
+                  className="button ghost button-sm"
+                  onClick={() => setSnoozed((prev) => new Set([...prev, alert.commodity]))}
+                >
+                  Snooze 24h
+                </button>
+              </div>
             </div>
-          </article>
+          </div>
         ))}
       </div>
     </section>
@@ -156,16 +142,15 @@ function AccuracyPanel({ points }: { points: AccuracyPoint[] }) {
       <div className="section-title">
         <div>
           <p className="eyebrow">Model performance</p>
-          <h3>Forecast accuracy — last 7 days</h3>
+          <h3 style={{ fontSize: "var(--text-lg)", letterSpacing: "-0.01em" }}>
+            Forecast accuracy — last 7 days
+          </h3>
         </div>
         <div style={{ textAlign: "right" }}>
-          <span
-            className={`accuracy-badge ${badgeClass}`}
-            style={{ fontSize: "1.1rem", padding: "6px 14px" }}
-          >
+          <span className={`accuracy-badge ${badgeClass}`} style={{ fontSize: "1.1rem", padding: "6px 16px" }}>
             {avgAccuracy}%
           </span>
-          <small style={{ display: "block", marginTop: "4px" }}>avg accuracy</small>
+          <p style={{ margin: "4px 0 0", fontSize: "0.72rem", color: "var(--text-tertiary)" }}>avg accuracy</p>
         </div>
       </div>
 
@@ -174,23 +159,23 @@ function AccuracyPanel({ points }: { points: AccuracyPoint[] }) {
           const cls = p.accuracyPct >= 90 ? "good" : p.accuracyPct >= 80 ? "fair" : "poor";
           return (
             <div key={p.date} className="accuracy-row">
-              <span style={{ color: "var(--text)", fontWeight: 500, fontSize: "0.85rem" }}>
+              <span style={{ color: "var(--text)", fontWeight: 600, fontSize: "var(--text-sm)" }}>
                 {p.dayLabel}
               </span>
-              <small>
-                Pred: <strong style={{ color: "var(--text)" }}>₹{p.predicted.toLocaleString("en-IN")}</strong>
-              </small>
-              <small>
-                Actual: <strong style={{ color: "var(--text)" }}>₹{p.actual.toLocaleString("en-IN")}</strong>
-              </small>
+              <span style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)" }}>
+                ₹{p.predicted.toLocaleString("en-IN")}
+              </span>
+              <span style={{ color: "var(--text)", fontSize: "var(--text-sm)", fontWeight: 500 }}>
+                ₹{p.actual.toLocaleString("en-IN")}
+              </span>
               <span className={`accuracy-badge ${cls}`}>{p.accuracyPct}%</span>
             </div>
           );
         })}
       </div>
 
-      <p style={{ marginTop: "16px", fontSize: "0.8rem", color: "var(--muted)" }}>
-        Accuracy = 1 − |predicted − actual| / actual. Computed via walk-forward validation on your real POS data.
+      <p style={{ marginTop: 14, fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+        Accuracy = 1 − |predicted − actual| / actual · walk-forward validation on your POS data
       </p>
     </section>
   );
@@ -218,53 +203,100 @@ export function DashboardClient({
         body: JSON.stringify({ title, status, forecastDate: targetDate })
       });
     } catch {
-      // fire-and-forget — UI state already updated locally
+      // fire-and-forget
     }
   };
 
   return (
     <div className="grid gap-6">
-      {/* ── Hero forecast card ──────────────────────────────────────────────── */}
-      <section className="hero-card">
-        <p className="eyebrow">Tomorrow for {outletName}</p>
-        <h2 style={{ fontSize: "1.6rem", letterSpacing: "-0.02em" }}>Do this tomorrow</h2>
-        <div className="hero-metrics">
-          <article>
-            <span>Revenue forecast</span>
-            <strong>₹{bundle.forecast.predictedRevenue.toLocaleString("en-IN")}</strong>
-            <small>
-              Range: ₹{bundle.forecast.confidenceLow.toLocaleString("en-IN")}–₹
-              {bundle.forecast.confidenceHigh.toLocaleString("en-IN")}
-            </small>
-          </article>
-          <article>
-            <span>Expected orders</span>
-            <strong>{bundle.forecast.predictedOrders}</strong>
-            <small>{bundle.forecast.reasons[0]}</small>
-          </article>
-          {isDemo && (
-            <article style={{ borderColor: "rgba(248,184,78,0.3)" }}>
-              <span style={{ color: "var(--warn)" }}>Demo data</span>
-              <strong style={{ fontSize: "1rem" }}>Upload POS to see real numbers</strong>
-              <small>
-                <a href="/onboarding" style={{ color: "var(--accent)" }}>
-                  Start onboarding →
-                </a>
-              </small>
-            </article>
-          )}
+
+      {/* ── KPI Row ──────────────────────────────────────────────── */}
+      <div className="kpi-grid">
+        <div className="kpi-card">
+          <div className="kpi-icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 12l4-4 3 3 5-6"/>
+            </svg>
+          </div>
+          <div className="kpi-label">Revenue forecast</div>
+          <div className="kpi-value">₹{(bundle.forecast.predictedRevenue / 1000).toFixed(1)}k</div>
+          <div className="kpi-delta neutral">
+            ₹{bundle.forecast.confidenceLow.toLocaleString("en-IN")} – ₹{bundle.forecast.confidenceHigh.toLocaleString("en-IN")}
+          </div>
         </div>
+
+        <div className="kpi-card">
+          <div className="kpi-icon" style={{ color: "var(--indigo)" }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="1" y="4" width="14" height="9" rx="2"/>
+              <path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/>
+            </svg>
+          </div>
+          <div className="kpi-label">Expected orders</div>
+          <div className="kpi-value">{bundle.forecast.predictedOrders}</div>
+          <div className="kpi-delta neutral" style={{ color: "var(--text-secondary)" }}>
+            orders tomorrow
+          </div>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-icon" style={{ color: "var(--amber)" }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="8" cy="7" r="4"/>
+              <path d="M4 14c0-2.2 1.8-4 4-4s4 1.8 4 4"/>
+            </svg>
+          </div>
+          <div className="kpi-label">Staff needed</div>
+          <div className="kpi-value">{bundle.staffing.cooksNeeded + bundle.staffing.serviceStaffNeeded}</div>
+          <div className="kpi-delta neutral" style={{ color: "var(--text-secondary)" }}>
+            {bundle.staffing.cooksNeeded} cooks · {bundle.staffing.serviceStaffNeeded} floor
+          </div>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-icon" style={{ color: "var(--red)" }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 4h12M5 4V3h6v1M4 4l1 9h6l1-9"/>
+            </svg>
+          </div>
+          <div className="kpi-label">Shopping items</div>
+          <div className="kpi-value">{bundle.shoppingList.length}</div>
+          <div className="kpi-delta neutral" style={{ color: "var(--text-secondary)" }}>
+            ingredients to buy
+          </div>
+        </div>
+      </div>
+
+      {/* ── Hero forecast card ────────────────────────────────────── */}
+      <section className="hero-card">
+        <p className="eyebrow">Tomorrow · {outletName}</p>
+        <h2 style={{ fontSize: "var(--text-2xl)", letterSpacing: "-0.02em", marginBottom: 8 }}>
+          ₹{bundle.forecast.predictedRevenue.toLocaleString("en-IN")}
+        </h2>
+        <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)", margin: "0 0 20px" }}>
+          Confidence range: ₹{bundle.forecast.confidenceLow.toLocaleString("en-IN")} – ₹{bundle.forecast.confidenceHigh.toLocaleString("en-IN")}
+        </p>
+        {bundle.forecast.reasons[0] && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--teal)", flexShrink: 0 }} />
+            <span style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)" }}>
+              {bundle.forecast.reasons[0]}
+            </span>
+          </div>
+        )}
       </section>
 
-      {/* ── 7-day revenue chart ─────────────────────────────────────────────── */}
+      {/* ── 7-day revenue chart ───────────────────────────────────── */}
       <section className="panel">
         <div className="section-title">
           <div>
             <p className="eyebrow">Revenue trend</p>
-            <h3>7-day actuals + tomorrow's forecast</h3>
+            <h3 style={{ fontSize: "var(--text-lg)", letterSpacing: "-0.01em" }}>
+              7-day actuals + tomorrow&apos;s forecast
+            </h3>
           </div>
-          <span className="pill">
-            {bundle.forecast.reasons.length} signal{bundle.forecast.reasons.length !== 1 ? "s" : ""} detected
+          <span className="pill accent">
+            {bundle.forecast.reasons.length} signal{bundle.forecast.reasons.length !== 1 ? "s" : ""}
           </span>
         </div>
         <div className="chart-wrapper">
@@ -275,50 +307,49 @@ export function DashboardClient({
           />
         </div>
         {bundle.forecast.reasons.length > 1 && (
-          <p style={{ marginTop: "12px", fontSize: "0.82rem", color: "var(--muted)" }}>
+          <p style={{ marginTop: 12, fontSize: "0.8rem", color: "var(--text-secondary)" }}>
             {bundle.forecast.reasons[1]}
           </p>
         )}
       </section>
 
-      {/* ── Menu tomorrow — SKU forecast ────────────────────────────────────── */}
+      {/* ── SKU forecast chart ────────────────────────────────────── */}
       {Object.keys(bundle.forecast.skuForecast).length > 0 && (
         <section className="panel">
           <div className="section-title">
             <div>
               <p className="eyebrow">Menu tomorrow</p>
-              <h3>Expected orders by dish</h3>
+              <h3 style={{ fontSize: "var(--text-lg)", letterSpacing: "-0.01em" }}>Expected orders by dish</h3>
             </div>
             <span className="pill">
               {Object.keys(bundle.forecast.skuForecast).length} items
             </span>
           </div>
-          <div style={{ height: "220px" }}>
+          <div style={{ height: 220 }}>
             <SkuChart skuForecast={bundle.forecast.skuForecast} />
           </div>
-          <p style={{ marginTop: "12px", fontSize: "0.82rem", color: "var(--muted)" }}>
-            Top dish (teal) drives your shopping list. Prep quantities are scaled to these projections.
+          <p style={{ marginTop: 12, fontSize: "0.78rem", color: "var(--text-secondary)" }}>
+            Top dish drives your shopping list. Prep quantities scale to these projections.
           </p>
         </section>
       )}
 
-      {/* ── Supply Watch ───────────────────────────────────────────────────── */}
+      {/* ── Supply Watch ──────────────────────────────────────────── */}
       {bundle.supplyAlerts.length > 0 && (
         <SupplyWatchPanel alerts={bundle.supplyAlerts} />
       )}
 
-      {/* ── Shopping list + Staffing ────────────────────────────────────────── */}
+      {/* ── Shopping list + Staffing ──────────────────────────────── */}
       <section className="grid gap-6 lg:grid-cols-2">
         {/* Shopping list */}
         <article className="panel">
           <div className="section-title">
             <div>
               <p className="eyebrow">Inventory</p>
-              <h3>Shopping list</h3>
+              <h3 style={{ fontSize: "var(--text-lg)", letterSpacing: "-0.01em" }}>Shopping list</h3>
             </div>
             <button
-              className={`button ${acceptedShopping ? "secondary" : ""}`}
-              style={{ minWidth: "120px" }}
+              className={`button button-sm ${acceptedShopping ? "secondary" : ""}`}
               onClick={() => {
                 setAcceptedShopping(true);
                 void handleAction("Shopping list", "accepted");
@@ -328,19 +359,29 @@ export function DashboardClient({
             </button>
           </div>
           {bundle.shoppingList.length > 0 ? (
-            <ul className="stack-list">
-              {bundle.shoppingList.map((item) => (
-                <li key={item.ingredient}>
-                  <strong>
-                    {item.ingredient}: {item.quantityToBuy} {item.unit}
-                  </strong>
-                  <span>{item.rationale}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="table-shell">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ingredient</th>
+                    <th>Qty</th>
+                    <th>Unit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bundle.shoppingList.map((item) => (
+                    <tr key={item.ingredient}>
+                      <td style={{ fontWeight: 600 }}>{item.ingredient}</td>
+                      <td style={{ color: "var(--teal)", fontWeight: 700 }}>{item.quantityToBuy}</td>
+                      <td style={{ color: "var(--text-secondary)" }}>{item.unit}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
-            <p style={{ color: "var(--muted)", fontSize: "0.9rem" }}>
-              No purchases needed — current stock covers tomorrow&apos;s projected demand.
+            <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)" }}>
+              No purchases needed — current stock covers tomorrow&apos;s demand.
             </p>
           )}
         </article>
@@ -350,36 +391,36 @@ export function DashboardClient({
           <div className="section-title">
             <div>
               <p className="eyebrow">Staffing</p>
-              <h3>Peak-hour plan</h3>
+              <h3 style={{ fontSize: "var(--text-lg)", letterSpacing: "-0.01em" }}>Peak-hour plan</h3>
             </div>
             <button
-              className={`button ${acceptedStaffing ? "secondary" : ""}`}
-              style={{ minWidth: "130px" }}
+              className={`button button-sm ${acceptedStaffing ? "secondary" : ""}`}
               onClick={() => {
                 setAcceptedStaffing(true);
                 void handleAction("Staffing", "accepted");
               }}
             >
-              {acceptedStaffing ? "✓ Scheduled" : "Accept staffing"}
+              {acceptedStaffing ? "✓ Scheduled" : "Accept plan"}
             </button>
           </div>
-          <div className="metric-card" style={{ marginBottom: "16px" }}>
-            <strong style={{ fontSize: "1.3rem" }}>
-              {bundle.staffing.cooksNeeded} cooks · {bundle.staffing.serviceStaffNeeded} floor staff
+          <div className="metric-card" style={{ marginBottom: 16 }}>
+            <strong style={{ fontSize: "var(--text-2xl)" }}>
+              {bundle.staffing.cooksNeeded} cooks · {bundle.staffing.serviceStaffNeeded} floor
             </strong>
-            <p style={{ color: "var(--muted)", margin: "4px 0 0" }}>
+            <p style={{ color: "var(--text-secondary)", margin: "4px 0 0", fontSize: "var(--text-sm)" }}>
               {bundle.staffing.shiftStartHour}:00 – {bundle.staffing.shiftEndHour}:00
             </p>
-            <span style={{ fontSize: "0.85rem" }}>{bundle.staffing.rationale}</span>
+            <p style={{ color: "var(--text-secondary)", margin: "6px 0 0", fontSize: "var(--text-sm)" }}>
+              {bundle.staffing.rationale}
+            </p>
           </div>
 
-          {/* Hourly orders chart */}
           {bundle.forecast.hourlyOrders && bundle.forecast.hourlyOrders.length > 0 && (
             <>
-              <p style={{ fontSize: "0.78rem", color: "var(--muted)", marginBottom: "6px", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              <p style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginBottom: 6, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 Hourly order pattern
               </p>
-              <div style={{ height: "120px" }}>
+              <div style={{ height: 100 }}>
                 <HourlyChart hourlyOrders={bundle.forecast.hourlyOrders} />
               </div>
             </>
@@ -387,119 +428,116 @@ export function DashboardClient({
         </article>
       </section>
 
-      {/* ── Action cards ────────────────────────────────────────────────────── */}
+      {/* ── Action cards ──────────────────────────────────────────── */}
       <section className="panel">
         <div className="section-title">
           <div>
             <p className="eyebrow">Action cards</p>
-            <h3>Prioritized recommendations</h3>
+            <h3 style={{ fontSize: "var(--text-lg)", letterSpacing: "-0.01em" }}>Prioritized recommendations</h3>
           </div>
           {acceptedCards.size > 0 && (
-            <span className="pill">
-              {acceptedCards.size} accepted today
-            </span>
+            <span className="pill accent">{acceptedCards.size} accepted</span>
           )}
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {bundle.actionCards
             .filter((card) => !dismissedCards.has(card.title))
             .map((card) => {
               const isAccepted = acceptedCards.has(card.title);
-              const pillBg =
-                card.priority === 1
-                  ? "rgba(239,68,68,0.18)"
-                  : card.priority === 2
-                    ? "rgba(248,184,78,0.18)"
-                    : "var(--accent-soft)";
-              const pillColor =
-                card.priority === 1 ? "#ef4444" : card.priority === 2 ? "var(--warn)" : "var(--accent)";
+              const barClass =
+                card.priority === 1 ? "priority-1" : card.priority === 2 ? "priority-2" : "priority-3";
 
               return (
-                <article
-                  className="action-card"
+                <div
                   key={card.title}
+                  className="action-card"
                   style={{
-                    opacity: isAccepted ? 0.7 : 1,
-                    borderColor: isAccepted ? "rgba(74,217,167,0.3)" : undefined,
-                    transition: "opacity 0.2s, border-color 0.2s"
+                    opacity: isAccepted ? 0.6 : 1,
+                    transition: "opacity 0.2s"
                   }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", marginBottom: "10px" }}>
-                    <p className="pill" style={{ background: pillBg, color: pillColor }}>
-                      {card.category}
+                  <div className={`action-card-bar ${barClass}`} />
+                  <div style={{ paddingLeft: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, marginBottom: 6 }}>
+                      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                        <span className={`pill ${card.priority === 1 ? "red" : card.priority === 2 ? "amber" : "accent"}`} style={{ fontSize: "0.65rem" }}>
+                          {card.category}
+                        </span>
+                      </div>
+                      <button
+                        className="button ghost button-sm"
+                        style={{ padding: "3px 8px", fontSize: "0.72rem" }}
+                        onClick={() => {
+                          setDismissedCards((prev) => new Set([...prev, card.title]));
+                          void handleAction(card.title, "dismissed");
+                        }}
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                    <h4 style={{ fontSize: "var(--text-sm)", marginBottom: 4, color: "var(--text)", fontWeight: 600 }}>
+                      {card.title}
+                    </h4>
+                    <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)", marginBottom: 10 }}>
+                      {card.explanation}
                     </p>
-                    <button
-                      className="button ghost"
-                      style={{ fontSize: "0.75rem", padding: "4px 10px" }}
-                      onClick={() => {
-                        setDismissedCards((prev) => new Set([...prev, card.title]));
-                        void handleAction(card.title, "dismissed");
-                      }}
-                    >
-                      ✕
-                    </button>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ color: "var(--text-tertiary)", fontSize: "0.75rem" }}>{card.expectedImpact}</span>
+                      <button
+                        className={`button button-sm ${isAccepted ? "secondary" : ""}`}
+                        onClick={() => {
+                          setAcceptedCards((prev) => new Set([...prev, card.title]));
+                          void handleAction(card.title, "accepted");
+                        }}
+                        disabled={isAccepted}
+                      >
+                        {isAccepted ? "✓ Done" : "Accept"}
+                      </button>
+                    </div>
                   </div>
-                  <h4 style={{ fontSize: "0.95rem", marginBottom: "6px" }}>{card.title}</h4>
-                  <p style={{ color: "var(--muted)", fontSize: "0.875rem", marginBottom: "10px" }}>
-                    {card.explanation}
-                  </p>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
-                    <small style={{ color: "var(--muted)" }}>{card.expectedImpact}</small>
-                    <button
-                      className={`button ${isAccepted ? "secondary" : ""}`}
-                      style={{ fontSize: "0.78rem", padding: "6px 12px", minWidth: "80px", flexShrink: 0 }}
-                      onClick={() => {
-                        setAcceptedCards((prev) => new Set([...prev, card.title]));
-                        void handleAction(card.title, "accepted");
-                      }}
-                      disabled={isAccepted}
-                    >
-                      {isAccepted ? "✓ Done" : "Accept"}
-                    </button>
-                  </div>
-                </article>
+                </div>
               );
             })}
           {bundle.actionCards.every((c) => dismissedCards.has(c.title)) && (
-            <p style={{ color: "var(--muted)", fontSize: "0.9rem", gridColumn: "1 / -1" }}>
+            <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)" }}>
               All action cards dismissed for today.
             </p>
           )}
         </div>
       </section>
 
-      {/* ── Forecast drivers ────────────────────────────────────────────────── */}
+      {/* ── Forecast drivers ──────────────────────────────────────── */}
       <section className="panel">
         <div className="section-title">
           <div>
             <p className="eyebrow">Why the model says this</p>
-            <h3>Forecast drivers</h3>
+            <h3 style={{ fontSize: "var(--text-lg)", letterSpacing: "-0.01em" }}>Forecast drivers</h3>
           </div>
         </div>
-        <ul className="stack-list">
+        <div className="driver-list">
           {bundle.forecast.reasons.map((reason) => (
-            <li key={reason} style={{ color: "var(--muted)", fontSize: "0.9rem" }}>
+            <div key={reason} className="driver-item">
+              <div className="driver-dot" />
               {reason}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       </section>
 
-      {/* ── Keep data fresh ──────────────────────────────────────────────────── */}
+      {/* ── Data freshness ────────────────────────────────────────── */}
       <section
         className="panel"
-        style={{ borderColor: isDemo ? "rgba(248,184,78,0.25)" : "rgba(74,217,167,0.18)" }}
+        style={{ borderColor: isDemo ? "rgba(255,180,0,0.25)" : "rgba(0,166,153,0.2)" }}
       >
         <div className="section-title">
           <div>
-            <p className="eyebrow" style={{ color: isDemo ? "var(--warn)" : "var(--accent)" }}>
+            <p className="eyebrow" style={{ color: isDemo ? "var(--amber)" : "var(--accent)" }}>
               Data freshness
             </p>
-            <h3>Keep data fresh</h3>
+            <h3 style={{ fontSize: "var(--text-lg)", letterSpacing: "-0.01em" }}>Keep data fresh</h3>
           </div>
           <button
-            className="button secondary"
-            style={{ fontSize: "0.82rem", whiteSpace: "nowrap" }}
+            className="button ghost button-sm"
             onClick={() => setShowSyncModal((v) => !v)}
           >
             {showSyncModal ? "Cancel" : isDemo ? "Upload data" : "Upload more"}
@@ -507,78 +545,58 @@ export function DashboardClient({
         </div>
 
         {!showSyncModal && (
-          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
-            {isDemo ? (
-              <p style={{ color: "var(--muted)", fontSize: "0.9rem", margin: 0 }}>
-                Running on demo data.{" "}
-                <a href="/onboarding" style={{ color: "var(--accent)" }}>
-                  Upload your POS CSV
-                </a>{" "}
-                to get forecasts from your real sales history.
-              </p>
-            ) : (
-              <>
-                <div>
-                  <span style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>Last synced</span>
-                  <p style={{ margin: "4px 0 0", fontWeight: 600 }}>
-                    {salesHistory.length > 0
-                      ? new Date(salesHistory[salesHistory.length - 1].date + "T00:00:00Z")
-                          .toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })
-                      : "—"}
-                  </p>
+          isDemo ? (
+            <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)" }}>
+              Running on demo data.{" "}
+              <a href="/onboarding" className="accent-link">Upload your POS CSV</a>{" "}
+              to get forecasts from your real sales history.
+            </p>
+          ) : (
+            <div className="freshness-grid">
+              <div className="freshness-item">
+                <div className="freshness-label">Last synced</div>
+                <div className="freshness-value">
+                  {salesHistory.length > 0
+                    ? new Date(salesHistory[salesHistory.length - 1].date + "T00:00:00Z")
+                        .toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })
+                    : "—"}
                 </div>
-                <div>
-                  <span style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>Days of history</span>
-                  <p style={{ margin: "4px 0 0", fontWeight: 600 }}>{salesHistory.length} days</p>
+              </div>
+              <div className="freshness-item">
+                <div className="freshness-label">Days of history</div>
+                <div className="freshness-value">{salesHistory.length} days</div>
+              </div>
+              <div className="freshness-item">
+                <div className="freshness-label">Forecast quality</div>
+                <div className="freshness-value" style={{ color: salesHistory.length >= 14 ? "var(--teal)" : salesHistory.length >= 7 ? "var(--amber)" : "var(--red)" }}>
+                  {salesHistory.length >= 14 ? "Excellent" : salesHistory.length >= 7 ? "Good" : "Needs more data"}
                 </div>
-                <div>
-                  <span style={{ fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>Forecast quality</span>
-                  <p style={{ margin: "4px 0 0", fontWeight: 600, color: salesHistory.length >= 14 ? "var(--accent)" : salesHistory.length >= 7 ? "var(--warn)" : "#ef4444" }}>
-                    {salesHistory.length >= 14 ? "Excellent" : salesHistory.length >= 7 ? "Good" : "Needs more data"}
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
+              </div>
+            </div>
+          )
         )}
 
         {showSyncModal && (
-          <div
-            style={{
-              marginTop: "8px",
-              padding: "20px",
-              borderRadius: "16px",
-              background: "rgba(7,17,31,0.5)",
-              border: "1px solid var(--border)"
-            }}
-          >
-            <p style={{ fontSize: "0.9rem", color: "var(--muted)", marginBottom: "16px" }}>
-              Upload your latest weekly POS export. New data will be merged — no duplicates created.
+          <div style={{ marginTop: 8, padding: 18, borderRadius: 10, background: "var(--surface-raised)", border: "1px solid var(--border)" }}>
+            <p style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", marginBottom: 14 }}>
+              Upload your latest weekly POS export. New data will be merged — no duplicates.
             </p>
-            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-              <a
-                href="/onboarding"
-                className="button"
-                style={{ fontSize: "0.85rem" }}
-              >
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <a href="/onboarding" className="button button-sm">
                 Go to upload wizard →
               </a>
-              <button
-                className="button ghost"
-                style={{ fontSize: "0.85rem" }}
-                onClick={() => setShowSyncModal(false)}
-              >
+              <button className="button ghost button-sm" onClick={() => setShowSyncModal(false)}>
                 Cancel
               </button>
             </div>
-            <p style={{ marginTop: "12px", fontSize: "0.78rem", color: "var(--muted)" }}>
-              Supported formats: Petpooja, UrbanPiper, Posist, Forkcast Standard CSV
+            <p style={{ marginTop: 10, fontSize: "0.72rem", color: "var(--text-tertiary)" }}>
+              Formats: Petpooja · UrbanPiper · Posist · Forkcast Standard CSV
             </p>
           </div>
         )}
       </section>
 
-      {/* ── Forecast accuracy tracker ────────────────────────────────────────── */}
+      {/* ── Forecast accuracy tracker ─────────────────────────────── */}
       <AccuracyPanel points={accuracyPoints} />
     </div>
   );

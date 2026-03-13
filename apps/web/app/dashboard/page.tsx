@@ -65,28 +65,12 @@ export default async function DashboardPage() {
   return (
     <div className="grid gap-6">
       {isDemo && (
-        <div
-          style={{
-            padding: "12px 18px",
-            borderRadius: "14px",
-            background: "rgba(248, 184, 78, 0.10)",
-            border: "1px solid rgba(248, 184, 78, 0.28)",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "12px"
-          }}
-        >
-          <span style={{ color: "var(--warn)", fontSize: "0.9rem" }}>
-            Demo mode — showing sample data. Upload your POS data to see real forecasts.
+        <div className="demo-notice">
+          <span>⚡</span>
+          <span>
+            Demo mode — showing sample data.{" "}
+            <a href="/onboarding">Upload your POS data</a> to see real forecasts.
           </span>
-          <a
-            className="button secondary"
-            href="/onboarding"
-            style={{ fontSize: "0.82rem", padding: "8px 14px", whiteSpace: "nowrap" }}
-          >
-            Upload data
-          </a>
         </div>
       )}
       <DashboardClient

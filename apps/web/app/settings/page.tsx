@@ -33,26 +33,29 @@ export default async function SettingsPage({
   return (
     <div className="grid gap-6" style={{ maxWidth: 720 }}>
       {/* Header */}
-      <section className="hero-card">
+      <div style={{ marginBottom: 8 }}>
         <p className="eyebrow">Configuration</p>
-        <h2 style={{ fontSize: "1.6rem", letterSpacing: "-0.02em" }}>Outlet settings</h2>
-        <p className="lead" style={{ marginTop: "8px" }}>
+        <h2 style={{ fontSize: "var(--text-2xl)", letterSpacing: "-0.03em", marginBottom: 8, color: "var(--text)" }}>Outlet settings</h2>
+        <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-base)", maxWidth: 560 }}>
           Update your outlet profile. Changes affect forecast signals, supply alerts, and
           WhatsApp notifications immediately.
         </p>
-      </section>
+      </div>
 
       {/* Success banner */}
       {saved && (
         <div
           style={{
             padding: "12px 18px",
-            borderRadius: "14px",
-            background: "rgba(74,217,167,0.10)",
-            border: "1px solid rgba(74,217,167,0.3)",
-            color: "var(--accent)",
-            fontSize: "0.9rem",
-            fontWeight: 500
+            borderRadius: 8,
+            background: "var(--teal-soft)",
+            border: "1px solid rgba(0,166,153,0.25)",
+            color: "var(--teal)",
+            fontSize: "var(--text-sm)",
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            gap: 8
           }}
         >
           ✓ Settings saved successfully.
@@ -158,8 +161,8 @@ export default async function SettingsPage({
                     left: "14px",
                     top: "50%",
                     transform: "translateY(-50%)",
-                    color: "var(--muted)",
-                    fontSize: "0.875rem",
+                    color: "var(--text-secondary)",
+                    fontSize: "var(--text-sm)",
                     pointerEvents: "none"
                   }}
                 >
@@ -177,7 +180,7 @@ export default async function SettingsPage({
                   style={{ paddingLeft: "44px" }}
                 />
               </div>
-              <span style={{ fontSize: "0.8rem" }}>
+              <span style={{ fontSize: "var(--text-xs)" }}>
                 Receives daily 7pm briefing + critical supply alerts via Twilio WhatsApp.{" "}
                 <a
                   href="https://www.twilio.com/en-us/messaging/channels/whatsapp"
@@ -200,13 +203,13 @@ export default async function SettingsPage({
               Back to dashboard
             </a>
             {profile.outletId ? (
-              <small style={{ marginLeft: "auto" }}>
+              <small style={{ marginLeft: "auto", color: "var(--text-tertiary)" }}>
                 Outlet ID #{profile.outletId} · connected to database
               </small>
             ) : (
-              <small style={{ marginLeft: "auto", color: "var(--warn)" }}>
+              <small style={{ marginLeft: "auto", color: "var(--amber)" }}>
                 Demo mode — settings saved to session only.{" "}
-                <a href="/onboarding" style={{ color: "var(--accent)" }}>
+                <a href="/onboarding" className="accent-link">
                   Upload POS data →
                 </a>
               </small>
@@ -216,14 +219,14 @@ export default async function SettingsPage({
       </section>
 
       {/* Danger zone */}
-      <section className="panel" style={{ borderColor: "rgba(239,68,68,0.25)" }}>
-        <p className="eyebrow" style={{ color: "var(--danger, #ef4444)" }}>Danger zone</p>
+      <section className="panel" style={{ borderColor: "rgba(193,53,21,0.25)" }}>
+        <p className="eyebrow" style={{ color: "var(--red)" }}>Danger zone</p>
         <h3 style={{ marginBottom: "12px" }}>Reset session</h3>
-        <p style={{ color: "var(--muted)", fontSize: "0.9rem", marginBottom: "16px" }}>
+        <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)", marginBottom: "16px" }}>
           Clears your outlet profile cookie and returns to demo mode. Your uploaded POS data is
           preserved in the database.
         </p>
-        <a href="/api/auth/sign-out" className="button ghost" style={{ fontSize: "0.85rem" }}>
+        <a href="/api/auth/sign-out" className="button ghost button-sm">
           Sign out / reset session
         </a>
       </section>

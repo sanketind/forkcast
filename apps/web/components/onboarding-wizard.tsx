@@ -210,7 +210,7 @@ export function OnboardingWizard({ outletProfile }: Props) {
             <div style={{ fontSize: "2.4rem", marginBottom: "12px" }}>📄</div>
             {fileName ? (
               <>
-                <p style={{ color: "var(--accent)", fontWeight: 600, margin: "0 0 4px" }}>{fileName}</p>
+                <p style={{ color: "var(--teal)", fontWeight: 600, margin: "0 0 4px" }}>{fileName}</p>
                 <small>{rows.length} rows parsed · {detectedFormat}</small>
               </>
             ) : (
@@ -270,7 +270,7 @@ export function OnboardingWizard({ outletProfile }: Props) {
               <tbody>
                 {topSkus.map((sku) => (
                   <tr key={sku.sku}>
-                    <td style={{ color: "var(--accent)", fontFamily: "monospace", fontSize: "0.85rem" }}>{sku.sku}</td>
+                    <td style={{ color: "var(--indigo)", fontFamily: "monospace", fontSize: "0.85rem" }}>{sku.sku}</td>
                     <td style={{ fontWeight: 600 }}>{sku.itemName}</td>
                     <td>{sku.quantity}</td>
                     <td>
@@ -315,7 +315,7 @@ export function OnboardingWizard({ outletProfile }: Props) {
             )}
 
             {uploadState === "error" && (
-              <span style={{ color: "var(--warn)", fontSize: "0.9rem" }}>{errorMsg}</span>
+              <span style={{ color: "var(--amber)", fontSize: "var(--text-sm)" }}>{errorMsg}</span>
             )}
           </div>
         </section>

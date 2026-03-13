@@ -14,22 +14,22 @@ async function saveOutletAction(formData: FormData) {
 
 function DataQualityBadge({ daysUploaded }: { daysUploaded: number }) {
   const quality = daysUploaded >= 30 ? "Excellent" : daysUploaded >= 14 ? "Good" : daysUploaded >= 7 ? "Fair" : "Needs more";
-  const qualityColor = daysUploaded >= 30 ? "var(--accent)" : daysUploaded >= 14 ? "var(--accent)" : daysUploaded >= 7 ? "var(--warn)" : "#ef4444";
+  const qualityColor = daysUploaded >= 30 ? "var(--teal)" : daysUploaded >= 14 ? "var(--teal)" : daysUploaded >= 7 ? "var(--amber)" : "var(--red)";
   const fillPct = Math.min(100, Math.round((daysUploaded / 30) * 100));
 
   return (
-    <section className="panel" style={{ borderColor: "rgba(74, 217, 167, 0.3)" }}>
+    <section className="panel" style={{ borderColor: "rgba(0,166,153,0.2)" }}>
       <p className="eyebrow">Data health</p>
       <h3 style={{ marginBottom: "16px" }}>Your forecast quality</h3>
       <div style={{ display: "grid", gap: "14px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ color: qualityColor, fontWeight: 700, fontSize: "1.1rem" }}>{quality}</span>
-          <span style={{ color: "var(--muted)", fontSize: "0.88rem" }}>{daysUploaded} days of history</span>
+          <span style={{ color: "var(--text-secondary)", fontSize: "0.88rem" }}>{daysUploaded} days of history</span>
         </div>
         <div style={{ height: "6px", borderRadius: "999px", background: "var(--border)", overflow: "hidden" }}>
           <div style={{ height: "100%", width: `${fillPct}%`, background: qualityColor, borderRadius: "999px", transition: "width 0.4s ease" }} />
         </div>
-        <p style={{ color: "var(--muted)", fontSize: "0.85rem", margin: 0 }}>
+        <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", margin: 0 }}>
           {daysUploaded < 7
             ? "Upload at least 7 days for a working forecast."
             : daysUploaded < 30
