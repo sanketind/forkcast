@@ -1,2 +1,3 @@
 -r requirements.txt
 uvicorn[standard]>=0.34.0
+# Local dev: uvicorn api.index:app --reload
