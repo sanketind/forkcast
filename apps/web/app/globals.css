@@ -1316,6 +1316,21 @@ main.landing {
   gap: 12px;
 }
 
+.hero-mockup-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hero-mockup-title {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .hero-mockup-dot {
   width: 10px; height: 10px;
   border-radius: 50%;
@@ -1351,6 +1366,14 @@ main.landing {
   font-size: var(--text-sm);
   color: var(--text-secondary);
   margin-bottom: 24px;
+}
+
+.hero-mockup-kicker {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
 }
 
 .hero-mockup-chips {
@@ -1951,6 +1974,19 @@ main {
   margin-bottom: 20px;
 }
 
+.hero-mockup-forecast-main {
+  min-width: 0;
+}
+
+.hero-mockup-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 52px;
+  flex: 0 0 120px;
+  align-self: flex-end;
+}
+
 .hero-mockup-breakeven {
   background: rgba(0, 166, 153, 0.07);
   border: 1px solid rgba(0, 166, 153, 0.22);
@@ -2433,6 +2469,219 @@ main {
   background: var(--surface-raised);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+}
+
+/* ── Final mobile overrides (must stay after late desktop sections) ─────────── */
+@media (max-width: 1024px) {
+  .problem-section-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .problem-headline-block {
+    position: static;
+  }
+
+  .feature-bento-v2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feature-card-v2-tall {
+    grid-row: auto;
+  }
+
+  .daylife-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .pricing-card-featured {
+    transform: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .problem-section-inner,
+  .daylife-inner,
+  .pricing-section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .feature-bento-v2 {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-card-v2,
+  .pricing-card,
+  .daylife-col,
+  .problem-card {
+    min-width: 0;
+  }
+
+  .feature-card-v2 {
+    padding: 22px;
+  }
+
+  .feature-mini-demo {
+    padding: 14px;
+  }
+
+  .feature-mini-demo-number {
+    font-size: 1.8rem;
+  }
+
+  .breakeven-demo-row {
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .hero-mockup-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-mockup-time {
+    text-align: left;
+  }
+
+  .hero-mockup-title {
+    font-size: 0.68rem;
+  }
+
+  .hero-mockup-forecast-row {
+    align-items: stretch;
+  }
+
+  .hero-mockup-chart {
+    flex-basis: auto;
+    width: 100%;
+    max-width: 180px;
+  }
+
+  .daylife-item {
+    grid-template-columns: 64px 20px 1fr;
+    gap: 8px;
+    padding: 14px 16px;
+  }
+
+  .pricing-grid {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .problem-section-inner,
+  .daylife-inner,
+  .pricing-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .feature-card-v2,
+  .pricing-card {
+    padding: 18px;
+    border-radius: 1rem;
+  }
+
+  .feature-card-v2 h3 {
+    font-size: 1.45rem;
+  }
+
+  .pricing-price {
+    font-size: 2rem;
+  }
+
+  .feature-card-v2 p,
+  .pricing-features li,
+  .daylife-text,
+  .problem-card p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .feature-mini-demo-number {
+    font-size: 1.65rem;
+  }
+
+  .hero-mockup {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .hero-mockup-top {
+    margin-bottom: 16px;
+  }
+
+  .hero-mockup-title-row {
+    width: 100%;
+  }
+
+  .hero-mockup-title {
+    font-size: 0.66rem;
+    line-height: 1.4;
+  }
+
+  .hero-mockup-time {
+    font-size: 0.7rem;
+  }
+
+  .hero-mockup-forecast-row {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .hero-mockup-forecast-main {
+    text-align: center;
+  }
+
+  .hero-mockup-kicker {
+    margin-bottom: 6px;
+  }
+
+  .hero-mockup-number {
+    font-size: 2.4rem;
+  }
+
+  .hero-mockup-label {
+    margin-bottom: 0;
+  }
+
+  .hero-mockup-chart {
+    width: 100%;
+    max-width: none;
+    height: 42px;
+  }
+
+  .hero-mockup-breakeven {
+    margin-bottom: 16px;
+    padding: 12px 14px;
+  }
+
+  .hero-mockup-chips .pill {
+    white-space: normal;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .breakeven-demo-row {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .daylife-item {
+    grid-template-columns: 56px 1fr;
+  }
+
+  .daylife-icon {
+    display: none;
+  }
 }
 
 /* ── @theme inline (Tailwind v4 token mapping) ───────────────────────────────── */

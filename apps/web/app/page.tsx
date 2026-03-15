@@ -59,17 +59,9 @@ export default async function HomePage() {
           {/* Daily briefing mockup */}
           <div className="hero-mockup">
             <div className="hero-mockup-top">
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div className="hero-mockup-title-row">
                 <div className="hero-mockup-dot" />
-                <span
-                  style={{
-                    fontSize: "0.72rem",
-                    color: "var(--text-secondary)",
-                    fontWeight: 600,
-                    letterSpacing: "0.04em",
-                    textTransform: "uppercase",
-                  }}
-                >
+                <span className="hero-mockup-title">
                   Daily Brief · FC Road Kitchen
                 </span>
               </div>
@@ -77,16 +69,8 @@ export default async function HomePage() {
             </div>
 
             <div className="hero-mockup-forecast-row">
-              <div>
-                <div
-                  style={{
-                    fontSize: "0.68rem",
-                    color: "var(--text-tertiary)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    marginBottom: 4,
-                  }}
-                >
+              <div className="hero-mockup-forecast-main">
+                <div className="hero-mockup-kicker">
                   Tomorrow&apos;s Forecast
                 </div>
                 <div className="hero-mockup-number">
@@ -94,15 +78,7 @@ export default async function HomePage() {
                 </div>
                 <p className="hero-mockup-label">Range ₹22,400 – ₹27,200</p>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-end",
-                  gap: 4,
-                  height: 52,
-                  flex: "0 0 120px",
-                }}
-              >
+              <div className="hero-mockup-chart">
                 {[45, 60, 52, 70, 65, 80, 76, 88].map((h, i) => (
                   <div
                     key={i}
