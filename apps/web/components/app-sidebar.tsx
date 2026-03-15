@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ForkcastIcon } from "@/components/logo";
 
 type Props = {
   outletName: string;
@@ -54,7 +55,7 @@ export function AppSidebar({ outletName, email, activePath = "/dashboard" }: Pro
       {/* Logo */}
       <div className="app-sidebar-logo">
         <Link href="/dashboard">
-          <div className="logo-icon">⚡</div>
+          <div className="logo-icon"><ForkcastIcon size={18} color="#ffffff" /></div>
           <span className="logo-name">Forkcast</span>
         </Link>
       </div>

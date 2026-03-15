@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { signUpAction } from "./actions";
+import { ForkcastIcon } from "@/components/logo";
 
 export default function SignUpPage({
   searchParams
@@ -22,7 +23,7 @@ async function SignUpForm({
       {/* Left brand panel — coral gradient bg, all text must be white */}
       <div className="auth-brand-panel">
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 48, textDecoration: "none" }}>
-          <div style={{ width: 32, height: 32, background: "var(--on-brand-surface)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>⚡</div>
+          <div style={{ width: 32, height: 32, background: "var(--on-brand-surface)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}><ForkcastIcon size={18} color="#ffffff" /></div>
           <span style={{ fontSize: "var(--text-base)", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--on-brand)" }}>Forkcast</span>
         </Link>
 

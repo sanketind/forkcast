@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { MarketingNav } from "@/components/nav";
+import { ForkcastIcon } from "@/components/logo";
 
 async function getAuthState() {
   try {
@@ -25,7 +26,7 @@ export default async function HomePage() {
         {/* ── HERO ──────────────────────────────────────────────────── */}
         <section className="landing-hero">
           <div className="landing-hero-eyebrow">
-            ⚡ AI Co-pilot for Indian Restaurants
+            <ForkcastIcon size={11} color="var(--accent)" /> AI Co-pilot for Indian Restaurants
           </div>
 
           <h1 className="landing-hero-h1">
@@ -1001,8 +1002,8 @@ export default async function HomePage() {
         <footer className="landing-footer">
           <div className="landing-footer-inner">
             <Link href="/" className="marketing-logo">
-              <div className="logo-icon" style={{ width: 24, height: 24, fontSize: 13 }}>
-                ⚡
+              <div className="logo-icon" style={{ width: 24, height: 24 }}>
+                <ForkcastIcon size={13} color="#ffffff" />
               </div>
               <span className="logo-text" style={{ fontSize: "0.9rem" }}>
                 Forkcast

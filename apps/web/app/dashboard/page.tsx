@@ -8,6 +8,7 @@ import {
 } from "@forkcast/integrations";
 import { DashboardClient } from "@/components/dashboard-client";
 import { getOutletProfile } from "@/lib/demo-state";
+import { ForkcastIcon } from "@/components/logo";
 import { getRecipesForOutlet, getSalesDaysForOutlet } from "@/lib/sales-db";
 import { computeForecastAccuracy } from "@/lib/accuracy";
 
@@ -66,7 +67,7 @@ export default async function DashboardPage() {
     <div className="grid gap-6">
       {isDemo && (
         <div className="demo-notice">
-          <span>⚡</span>
+          <ForkcastIcon size={14} color="var(--amber)" />
           <span>
             Demo mode — showing sample data.{" "}
             <a href="/onboarding">Upload your POS data</a> to see real forecasts.
